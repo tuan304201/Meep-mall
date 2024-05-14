@@ -1,0 +1,72 @@
+.p-megamenu-vertical {
+  width: 100%;
+  padding: 10px 0;
+}
+
+.p-megamenu-panel {
+  padding: 0 19px;
+}
+
+.p-menuitem-link {
+  padding: 12px 10px 12px 24px;
+}
+
+.p-submenu-icon {
+  order: 2;
+}
+
+.p-panelmenu-header-action {
+  justify-content: space-between;
+}
+
+.p-menuitem-content .p-menuitem-link {
+  justify-content: space-between;
+}
+
+::-webkit-scrollbar {
+  width: 0px;
+}
+
+.box__shadow {
+  box-shadow: rgba(0, 0, 0, 0.15) 1.95px 1.95px 2.6px;
+}
+
+#form_login_password,
+#form_signin_password,
+#form_signin_checkPass {
+  background-color: transparent;
+}
+
+.ant-input:focus,
+.ant-input:hover,
+.ant-input-password:focus,
+.ant-input-affix-wrapper:focus-within,
+:where(.css-dev-only-do-not-override-16pw25h).ant-input-affix-wrapper:not(
+    .ant-input-affix-wrapper-disabled
+  ):hover {
+  border-color: transparent;
+  box-shadow: none;
+}
+
+#basic_password {
+  background-color: transparent;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p {
+  cursor: default;
+}
+
+input {
+  cursor: text;
+}
+
+a,
+button {
+  cursor: pointer;
+}
