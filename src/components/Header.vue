@@ -86,7 +86,9 @@
           <i class="pi pi-user text-3xl"></i>
           <span class="whitespace-nowrap">
             <p>Tài khoản</p>
-            <p>{{ isChecked ? 'Đăng xuất' : 'Đăng nhập' }}</p>
+            <RouterLink to="/">{{
+              isChecked ? 'Đăng xuất' : 'Đăng nhập'
+            }}</RouterLink>
           </span>
         </div>
 

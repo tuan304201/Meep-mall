@@ -14,6 +14,7 @@
         >
       </div>
     </div>
+    <FlashSaleProgress :sold="100" :total="500" />
   </div>
 </template>
 

@@ -70,3 +70,11 @@ a,
 button {
   cursor: pointer;
 }
+
+.btn__more {
+  transition: all 0.25s ease;
+}
+
+.btn__more:hover {
+  color: rgb(255, 185, 65);
+}
