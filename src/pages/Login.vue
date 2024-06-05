@@ -21,6 +21,14 @@
             />
           </a-form-item>
 
+          <a-form-item name="email" class="w-full">
+            <a-input
+              placeholder="Email"
+              class="bg-[#eee] border-transparent px-4 py-2"
+              v-model:value="formState.email"
+            />
+          </a-form-item>
+
           <a-form-item name="password" class="w-full">
             <a-input-password
               placeholder="Password"
@@ -61,7 +69,7 @@
       </div>
       <div class="form-container sign-in" :class="isActive ? 'hidden' : ''">
         <a-form
-          :model="formState"
+          :model="formStateLogin"
           class="form"
           :rules="rules"
           name="form_login"
@@ -78,24 +86,24 @@
             </a>
           </div>
           <span class="mb-4">or use your email and password</span>
-          <a-form-item name="username" class="w-full">
+          <a-form-item name="usernameLogin" class="w-full">
             <a-input
               placeholder="Username"
               class="bg-[#eee] border-transparent px-4 py-2"
-              v-model:value="formState.username"
+              v-model:value="formStateLogin.usernameLogin"
             />
           </a-form-item>
 
-          <a-form-item name="password" class="w-full">
+          <a-form-item name="passwordLogin" class="w-full">
             <a-input-password
               placeholder="Password"
               class="bg-[#eee] border-transparent px-4 py-2"
-              v-model:value="formState.password"
+              v-model:value="formStateLogin.passwordLogin"
             />
           </a-form-item>
 
           <a-form-item name="remember" class="w-full mb-2">
-            <a-checkbox v-model:checked="formState.remember">
+            <a-checkbox v-model:checked="formStateLogin.remember">
               Remember me
             </a-checkbox>
           </a-form-item>
@@ -107,6 +115,7 @@
                 type="primary"
                 html-type="submit"
                 @click="handleLogin"
+                :loading="isLoading"
               >
                 Log in
               </a-button>
@@ -149,7 +158,8 @@
 </template>
 
 <script>
-import { useToast } from 'vue-toastification'
+import { useToast } from "vue-toastification"
+import axios from "axios"
 
 const toast = useToast()
 export default {
@@ -157,53 +167,92 @@ export default {
     return {
       isActive: false,
       isShow: false,
+      isLoading: false,
+      refreshToken: "",
+      accessToken: "",
       formState: {
-        username: '',
-        password: '',
-        checkPass: '',
+        username: "",
+        email: "",
+        password: "",
+        checkPass: "",
+      },
+
+      formStateLogin: {
+        usernameLogin: "",
+        passwordLogin: "",
         remember: true,
       },
+
       rules: {
         username: [
           {
             required: true,
             validator: this.validateUsername,
-            trigger: 'change',
+            trigger: ["blur"],
           },
         ],
-        password: [
-          { required: true, validator: this.validatePass, trigger: 'change' },
+
+        email: [
+          {
+            required: true,
+            validator: this.validateEmail,
+            trigger: ["blur"],
+          },
         ],
-        checkPass: [{ validator: this.validatePassConfirm, trigger: 'change' }],
+
+        password: [
+          { required: true, validator: this.validatePass, trigger: "blur" },
+        ],
+
+        checkPass: [{ validator: this.validatePassConfirm, trigger: "change" }],
       },
     }
   },
   methods: {
     validateUsername(rule, value) {
       return new Promise((resolve, reject) => {
-        if (value === '') {
-          reject('Please input the username')
+        if (value === "") {
+          reject("Hãy nhập username")
+        } else if (value.length < 6) {
+          reject("Độ dài phải lớn hơn 6")
         } else {
           resolve()
         }
       })
     },
+
+    validateEmail(rule, value) {
+      return new Promise((resolve, reject) => {
+        const validateEmailRegex = /^\S+@\S+\.\S+$/
+        if (value === "") {
+          reject("Hãy nhập email")
+        } else if (!validateEmailRegex.test(value)) {
+          reject("Email chưa đúng định dạng")
+        } else {
+          resolve()
+        }
+      })
+    },
+
     validatePass(rule, value) {
       return new Promise((resolve, reject) => {
-        if (value === '') {
-          reject('Please input the password')
+        if (value === "") {
+          reject("Hãy nhập mật khẩu")
+        } else if (value.length < 9) {
+          reject("Độ dài phải lớn hơn 9")
         } else {
-          if (this.formState.checkPass !== '') {
-            this.$refs.formRef.validateFields(['checkPass'])
+          if (this.formState.checkPass !== "") {
+            this.$refs.formRef.validateFields(["checkPass"])
           }
           resolve()
         }
       })
     },
+
     validatePassConfirm(rule, value) {
       return new Promise((resolve, reject) => {
-        if (value === '') {
-          reject('Please input the password again')
+        if (value === "") {
+          reject("Please input the password again")
         } else if (value !== this.formState.password) {
           reject("Two inputs don't match!")
         } else {
@@ -211,52 +260,124 @@ export default {
         }
       })
     },
+
     togglePanel() {
       this.isActive = !this.isActive
     },
+
     handleRegister() {
       this.$refs.formRef
         .validate()
         .then(() => {
-          toast.success('Register Success!')
-          setTimeout(() => {
-            this.isActive = !this.isActive
-            this.resetFormState()
-          }, 1500)
+          // Gửi yêu cầu đăng ký
+          axios
+            .post("http://localhost:3000/register", {
+              username: this.formState.username,
+              email: this.formState.email,
+              password: this.formState.password,
+              confirm_password: this.formState.checkPass,
+            })
+            .then((response) => {
+              // Xử lý phản hồi từ server sau khi đăng ký thành công
+              console.log(response)
+              toast.success(response.data.message)
+              setTimeout(() => {
+                this.isActive = !this.isActive
+                this.resetFormState()
+              }, 1500)
+            })
+            .catch((error) => {
+              // Xử lý lỗi nếu đăng ký không thành công
+              toast.error("Đăng ký không thành công, Thử lại.")
+            })
         })
         .catch(() => {
-          toast.error('Please check the form for errors.')
+          toast.error("Hãy điền đúng định dạng")
         })
     },
+
     handleLogin() {
       this.$refs.formRef
         .validate()
         .then(() => {
-          toast.success('Login Success!')
-          setTimeout(() => {
-            this.isActive = !this.isActive
-            this.$router.push({ path: '/home' })
-          }, 1500)
+          axios
+            .post("http://localhost:3000/login", {
+              username: this.formStateLogin.usernameLogin,
+              password: this.formStateLogin.passwordLogin,
+            })
+            .then((response) => {
+              toast.success("Đăng nhập thành công")
+              this.isLoading = true
+              localStorage.setItem("accessToken", response.data.accessToken)
+              localStorage.setItem("refreshToken", response.data.refreshToken)
+
+              this.checkToken(response.data.accessToken)
+
+              setTimeout(() => {
+                this.isActive = !this.isActive
+                this.$router.push({ path: "/" })
+              }, 1500)
+            })
+            .catch((error) => {
+              // Xử lý lỗi nếu đăng ký không thành công
+              toast.error("Sai tài khoản hoặc mật khẩu.")
+            })
         })
         .catch(() => {
-          toast.error('Please check the form for errors.')
+          toast.error("Please check the form for errors.")
         })
     },
+
+    checkToken(token) {
+      axios
+        .get("http://localhost:3000/auth/user", {
+          headers: {
+            Authorization: token,
+          },
+        })
+        .then((res) => {})
+        .catch((error) => {
+          if (error.response && error.response.status === 401) {
+            this.refreshTokenHandler()
+          } else {
+            console.error(error)
+          }
+        })
+    },
+
+    refreshTokenHandler() {
+      const refreshToken = localStorage.getItem("refreshToken")
+      axios
+        .post("http://localhost:3000/auth/refresh", { token: refreshToken })
+        .then((response) => {
+          localStorage.setItem("accessToken", response.data.accessToken)
+          localStorage.setItem("refreshToken", response.data.refreshToken)
+          this.checkToken(response.data.accessToken)
+        })
+        .catch((error) => {
+          localStorage.removeItem("accessToken")
+          localStorage.removeItem("refreshToken")
+          this.$router.push({ path: "/login" })
+        })
+    },
+
     resetFormState() {
       this.formState = {
-        username: '',
-        password: '',
-        checkPass: '',
+        username: "",
+        password: "",
+        checkPass: "",
         remember: true,
       }
     },
   },
+
+  mounted() {},
 }
 </script>
 
 <style scoped>
 .bg__img {
-  background-image: url('/src/assets/images/bg.jpg');
+  background-image: url("/src/assets/images/bg.jpg");
   background-repeat: no-repeat;
   background-size: cover;
 }

@@ -16,11 +16,12 @@
         v-for="(product, index) in products"
         :key="index"
         :lg="{ span: 4 }"
-        :sm="{ span: 6 }"
-        :xs="{ span: 6 }"
+        :sm="{ span: 8 }"
+        :xs="{ span: 12 }"
         :xl="{ span: 4 }"
       >
         <CardProduct
+          :id="product.id"
           :img="product.src"
           :title="product.title"
           :price="product.price"
@@ -32,7 +33,7 @@
 </template>
 
 <script>
-import CardProduct from './CardProduct.vue'
+import CardProduct from "./CardProduct.vue"
 
 export default {
   components: {

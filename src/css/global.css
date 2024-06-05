@@ -33,11 +33,12 @@
 
 #form_login_password,
 #form_signin_password,
-#form_signin_checkPass {
-  background-color: transparent;
+#form_signin_checkPass,
+#form_login_passwordLogin {
+  background-color: transparent !important;
 }
 
-.ant-input:focus,
+/* .ant-input:focus,
 .ant-input:hover,
 .ant-input-password:focus,
 .ant-input-affix-wrapper:focus-within,
@@ -46,6 +47,10 @@
   ):hover {
   border-color: transparent;
   box-shadow: none;
+} */
+
+.ant-btn-loading-icon {
+  margin-bottom: 6px;
 }
 
 #basic_password {

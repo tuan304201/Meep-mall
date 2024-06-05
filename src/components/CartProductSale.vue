@@ -1,30 +1,37 @@
 <template>
-  <div class="bg-white p-1 text-black rounded box__shadow cursor-pointer">
-    <img :src="img" alt="" />
-    <div class="px-3">
-      <p class="text-sm line-clamp-2 font-medium mt-4">
-        {{ title }}
-      </p>
-      <div class="flex justify-between items-center pt-4 pb-2">
-        <span class="text-orange-600 font-semibold">{{
-          formatPrice(price)
-        }}</span>
-        <span class="text-xs text-gray-500"
-          >Đã bán {{ formatMoney(sold) }}</span
-        >
+  <router-link :to="`/product-sale/${id}`" class="no-underline">
+    <div class="bg-white p-1 text-black rounded box__shadow cursor-pointer">
+      <img :src="img" alt="" />
+      <div class="px-3">
+        <p class="text-sm line-clamp-2 font-medium mt-4">
+          {{ title }}
+        </p>
+        <div class="flex justify-between items-center pt-4 pb-2">
+          <span class="text-orange-600 font-semibold">{{
+            formatPrice(price)
+          }}</span>
+          <span class="text-xs text-gray-500"
+            >Đã bán {{ formatSold(sold) }}</span
+          >
+        </div>
       </div>
+      <FlashSaleProgress :sold="100" :total="500" />
     </div>
-    <FlashSaleProgress :sold="100" :total="500" />
-  </div>
+  </router-link>
 </template>
 
 <script>
-import FlashSaleProgress from './FlashSaleProgress.vue'
+import FlashSaleProgress from "./FlashSaleProgress.vue"
+import { formatPrice, formatSold } from "../helpers/Helper.js"
 export default {
   components: {
     FlashSaleProgress,
   },
   props: {
+    id: {
+      type: Number,
+      required: true,
+    },
     title: {
       type: String,
       required: true,
@@ -43,25 +50,8 @@ export default {
     },
   },
   methods: {
-    // Phương thức để định dạng giá thành tiền tệ VNĐ
-    formatPrice(price) {
-      // Sử dụng Intl.NumberFormat để định dạng giá
-      const formatter = new Intl.NumberFormat('vi-VN', {
-        style: 'currency',
-        currency: 'VND',
-      })
-      return formatter.format(price)
-    },
-
-    formatMoney(amount) {
-      if (amount >= 1000000) {
-        return (amount / 1000000).toFixed(1) + 'M'
-      } else if (amount >= 1000) {
-        return (amount / 1000).toFixed(amount % 1000 !== 0 ? 1 : 0) + 'k'
-      } else {
-        return amount.toString()
-      }
-    },
+    formatPrice,
+    formatSold,
   },
 }
 </script>

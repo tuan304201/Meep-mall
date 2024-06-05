@@ -56,7 +56,7 @@
       <a-col :span="7">
         <h3 class="text-lg font-bold mb-6 text-[#feb941]">Đăng ký nhận tin</h3>
         <a-input-search
-          v-model:value="value"
+          v-model="value"
           placeholder="Nhập địa chỉ email"
           enter-button="Đăng ký"
           size="large"
@@ -72,7 +72,18 @@
 </template>
 
 <script>
-export default {}
+export default {
+  data() {
+    return {
+      value: "",
+    }
+  },
+  methods: {
+    onSearch() {
+      console.log(this.value)
+    },
+  },
+}
 </script>
 
 <style lang="scss" scoped>
